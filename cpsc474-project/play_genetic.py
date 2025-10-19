@@ -1,4 +1,6 @@
 import itertools
+import random
+import matplotlib.pyplot as plt
 
 # this program does not check if the opponent has a winning move, so need to check in my main
 class ConnectFour:
@@ -143,7 +145,71 @@ class ConnectFour:
         self.print_board()
 
 
+def generate_random_genome():
+    return {
+        'piece_count': random.uniform(0, 3),
+        'winning_moves': random.uniform(0, 3),
+        'center_control': random.uniform(0, 3)
+    }
+
+def crossover(p1, p2):
+    return {
+        'piece_count': random.choice([p1['piece_count'], p2['piece_count']]),
+        'winning_moves': random.choice([p1['winning_moves'], p2['winning_moves']]),
+        'center_control': random.choice([p1['center_control'], p2['center_control']])
+    }
+
+def mutate(genome):
+    param = random.choice(list(genome.keys()))
+    genome[param] += random.uniform(-0.5, 0.5)
+    genome[param] = max(0, min(3, genome[param]))  # keep weights in range
+
+
+def fitness(game, genome):
+    # Plug weights into the game and evaluate board
+    game.piece_count = genome['piece_count']
+    game.potential_winning_moves = genome['winning_moves']
+    game.center_control_moves = genome['center_control']
+    return game.evaluate_board('X')
+
+def evolve(game, generations=20, population_size=10, mutation_rate=0.1):
+    population = [generate_random_genome() for _ in range(population_size)]
+    best_scores = []
+
+    for gen in range(generations):
+        scores = [(genome, fitness(game, genome)) for genome in population]
+        scores.sort(key=lambda x: x[1], reverse=True)
+
+        best_scores.append(scores[0][1])
+        print(f"Generation {gen}: Best Score = {scores[0][1]:.2f}")
+
+        # Select top 50% as parents
+        parents = [g for g, s in scores[:len(scores)//2]]
+
+        # Create next generation
+        next_gen = []
+        while len(next_gen) < population_size:
+            p1, p2 = random.sample(parents, 2)
+            child = crossover(p1, p2)
+            if random.random() < mutation_rate:
+                mutate(child)
+            next_gen.append(child)
+
+        population = next_gen
+
+    # Visualization
+    plt.plot(best_scores)
+    plt.title("Fitness Improvement over Generations")
+    plt.xlabel("Generation")
+    plt.ylabel("Best Fitness Score")
+    plt.show()
+
+    best_genome = max(population, key=lambda g: fitness(game, g))
+    return best_genome
+    
 if __name__ == "__main__":
     game = ConnectFour()
-    game.grid_search()
+    best = evolve(game, generations=30, population_size=10)
+    print("Best evolved parameters:", best)
+
 
