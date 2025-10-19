@@ -1,23 +1,26 @@
-# Define compiler and flags
-CC = python3
-CFLAGS = -m
+# Makefile for Connect Four project
 
-# Define source files
-SRC = connect4.py
-
-# Define target names
-TARGET = connect4
-
-# Define phony targets
-.PHONY: all clean
+PYTHON = python3
 
 # Default target
-all: $(TARGET)
+all: test
 
-# Rule to build the target
-$(TARGET): $(SRC)
-	$(CC) $(CFLAGS) $< -o $@
+# Run all tests
+test:
+	$(PYTHON) test_connect4.py
 
-# Rule to clean the build files
+# Run the genetic AI standalone
+genetic:
+	$(PYTHON) play_genetic.py
+
+# Run the simple AI standalone
+simple:
+	$(PYTHON) play_simple.py
+
+# Run interactive Connect4Extended
+play:
+	$(PYTHON) connect4.py
+
+# Clean any __pycache__ directories
 clean:
-	rm -f $(TARGET)
+	find . -type d -name "__pycache__" -exec rm -rf {} +
