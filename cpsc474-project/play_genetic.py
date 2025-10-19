@@ -10,6 +10,7 @@ class ConnectFour:
         self.columns = 7
         self.board = [[' ' for _ in range(self.columns)] for _ in range(self.rows)]
         self.current_player = 'X'
+        self.print
 
     # Other methods (print_board, is_valid_move, make_move, check_winner, switch_player, etc.)
 
@@ -145,32 +146,32 @@ class ConnectFour:
         self.print_board()
 
 
-def generate_random_genome():
-    return {
-        'piece_count': random.uniform(0, 3),
-        'winning_moves': random.uniform(0, 3),
-        'center_control': random.uniform(0, 3)
-    }
-
-def crossover(p1, p2):
-    return {
-        'piece_count': random.choice([p1['piece_count'], p2['piece_count']]),
-        'winning_moves': random.choice([p1['winning_moves'], p2['winning_moves']]),
-        'center_control': random.choice([p1['center_control'], p2['center_control']])
-    }
-
-def mutate(genome):
-    param = random.choice(list(genome.keys()))
-    genome[param] += random.uniform(-0.5, 0.5)
-    genome[param] = max(0, min(3, genome[param]))  # keep weights in range
-
-
-def fitness(game, genome):
-    # Plug weights into the game and evaluate board
-    game.piece_count = genome['piece_count']
-    game.potential_winning_moves = genome['winning_moves']
-    game.center_control_moves = genome['center_control']
-    return game.evaluate_board('X')
+    def generate_random_genome():
+        return {
+            'piece_count': random.uniform(0, 3),
+            'winning_moves': random.uniform(0, 3),
+            'center_control': random.uniform(0, 3)
+        }
+    
+    def crossover(p1, p2):
+        return {
+            'piece_count': random.choice([p1['piece_count'], p2['piece_count']]),
+            'winning_moves': random.choice([p1['winning_moves'], p2['winning_moves']]),
+            'center_control': random.choice([p1['center_control'], p2['center_control']])
+        }
+    
+    def mutate(genome):
+        param = random.choice(list(genome.keys()))
+        genome[param] += random.uniform(-0.5, 0.5)
+        genome[param] = max(0, min(3, genome[param]))  # keep weights in range
+    
+    
+    def fitness(game, genome):
+        # Plug weights into the game and evaluate board
+        game.piece_count = genome['piece_count']
+        game.potential_winning_moves = genome['winning_moves']
+        game.center_control_moves = genome['center_control']
+        return game.evaluate_board('X')
 
 def evolve(game, generations=20, population_size=10, mutation_rate=0.1):
     population = [generate_random_genome() for _ in range(population_size)]
