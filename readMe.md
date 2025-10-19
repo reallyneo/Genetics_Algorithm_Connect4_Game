@@ -1,7 +1,10 @@
 Connect Four AI Project
 
 Description
-This project implements a Connect Four game with two different AI strategies: one based on a genetic algorithm and another using a simple heuristic-based approach. The game allows users to play against either AI, compare the performance of both AIs, and evaluate the effectiveness of the strategies.
+This project implements a Connect 4 AI optimized via a Genetic Algorithm.
+The algorithm evolves weight combinations for heuristic board evaluation — balancing piece placement, potential wins, and center control.
+Over generations, the AI learns to select moves that maximize long-term winning potential.
+A simple visualization shows the convergence of fitness scores across 30 generations.
 
 Installation
 To install and set up the project, follow these steps:
