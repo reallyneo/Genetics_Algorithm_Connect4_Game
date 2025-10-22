@@ -73,59 +73,64 @@ class ConnectFourExtended(GeneticConnectFour):
     # -----------------------------------------------------------
     # GENETIC AI GAME LOOP
     # -----------------------------------------------------------
-    def play_game_genetic(self):
-        """
-        Runs one self-contained game using the Genetic Algorithm.
-        Returns True if the genetic AI wins, False if it loses or draws.
-        """
-        print("\n🧬 Playing with Genetic Algorithm AI...")
-        self.print_board()
+    def play_game_genetic(self, verbose=True):
+        if verbose:
+            print("\n🧬 Playing with Genetic Algorithm AI...")
+            self.print_board()
 
         while True:
             best_move, _, _ = self.grid_search()
             if best_move is None:
-                print("No valid move found — draw or full board.")
+                if verbose:
+                    print("No valid move found — draw or full board.")
                 return False
 
             self.make_move(best_move)
-            self.print_board()
+            if verbose:
+                self.print_board()
 
             if self.check_winner():
-                print(f"Genetic AI ({self.current_player}) wins!")
+                if verbose:
+                    print(f"Genetic AI ({self.current_player}) wins!")
                 return True
 
             if all(self.board[i][j] != ' ' for i in range(self.rows) for j in range(self.columns)):
-                print("It's a draw!")
+                if verbose:
+                    print("It's a draw!")
                 return False
+
+            self.switch_player()
+
 
             self.switch_player()
     
     # -----------------------------------------------------------
     # SIMPLE AI GAME LOOP
     # -----------------------------------------------------------
-    def play_game_simple(self):
-        """
-        Runs one self-contained game using the Simple Heuristic AI.
-        Returns True if the simple AI wins, False otherwise.
-        """
+    def play_game_simple(self, verbose=True):
         simple_game = SimpleConnectFour()
-        print("\n🧩 Playing with Simple Heuristic AI...")
-        simple_game.print_board()
+        if verbose:
+            print("\n🧩 Playing with Simple Heuristic AI...")
+            simple_game.print_board()
 
         while True:
             column = simple_game.select_simple_move()
             if simple_game.make_move(column):
-                simple_game.print_board()
+                if verbose:
+                    simple_game.print_board()
 
                 if simple_game.check_winner():
-                    print(f"Simple AI ({simple_game.current_player}) wins!")
+                    if verbose:
+                        print(f"Simple AI ({simple_game.current_player}) wins!")
                     return True
 
                 if all(simple_game.board[i][j] != ' ' for i in range(simple_game.rows) for j in range(simple_game.columns)):
-                    print("It's a draw!")
+                    if verbose:
+                        print("It's a draw!")
                     return False
 
                 simple_game.switch_player()
+
     
 
     # -----------------------------------------------------------
@@ -133,8 +138,10 @@ class ConnectFourExtended(GeneticConnectFour):
     # -----------------------------------------------------------
     def play(self, num_games=None):
         """
-        Plays either a single user-controlled game, 
+        Plays either a single manual game (if num_games is None)
         or runs an automated comparison between both AIs.
+        The first AI match will print its board for visual check;
+        the rest will run silently for speed.
         """
         if num_games is None:
             ### --- MANUAL PLAYER MODE ---
@@ -158,21 +165,23 @@ class ConnectFourExtended(GeneticConnectFour):
             total_duration_genetic_algorithm = 0
             total_duration_heuristic = 0
 
-            for _ in range(num_games):
+            for i in range(num_games):
                 print(f"\n==============================")
-                print(f" Starting Game {_ + 1}/{num_games}")
+                print(f" Starting Game {i + 1}/{num_games}")
                 print(f"==============================")
+
+                verbose = (i == 0)  # 👈 Only print details for the first game
 
                 # --- GENETIC AI GAME ---
                 start_time = time.time()
-                game_result = self.play_game_genetic()
+                game_result = self.play_game_genetic(verbose=verbose)
                 if game_result:
                     wins_genetic_algorithm += 1
                 total_duration_genetic_algorithm += time.time() - start_time
 
                 # --- SIMPLE AI GAME ---
                 start_time = time.time()
-                game_result = self.play_game_simple()
+                game_result = self.play_game_simple(verbose=verbose)
                 if game_result:
                     wins_heuristic += 1
                 total_duration_heuristic += time.time() - start_time
@@ -190,10 +199,13 @@ class ConnectFourExtended(GeneticConnectFour):
             print(f"Avg. Time (Simple):   {average_duration_heuristic:.2f}s")
 
 
+
+
 # -----------------------------------------------------------
 # MAIN ENTRY POINT
 # -----------------------------------------------------------
 if __name__ == "__main__":
     game = ConnectFourExtended()
-    num_games = int(input("Enter number of games to compare (press Enter for 1): ").strip() or "1")
+    num_games_input = input("Enter number of games to compare (press Enter for manual game): ").strip()
+    num_games = int(num_games_input) if num_games_input else None
     game.play(num_games)
