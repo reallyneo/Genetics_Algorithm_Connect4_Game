@@ -1,10 +1,13 @@
 import time
 from connect4 import ConnectFourExtended
 
+print("=== Test: Connect Four ===")
+
 def test_single_game():
-    print("=== Test: Single Game ===")
+    print("=== Test: Single AI Game ===")
     game = ConnectFourExtended()
-    game.play()
+    # Run a single automated AI-vs-AI match
+    game.play(num_games=1)
     print("Single game test completed.\n")
 
 def test_multiple_games(num_games=3):
@@ -14,8 +17,9 @@ def test_multiple_games(num_games=3):
     print("Multiple games comparison completed.\n")
 
 if __name__ == "__main__":
-    # Test a single interactive game
+    # Run one automated test game
     test_single_game()
 
-    # Test automatic comparison of genetic vs simple heuristic
+    # Then run multiple comparisons
     test_multiple_games(num_games=5)
+
