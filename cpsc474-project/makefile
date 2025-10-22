@@ -3,7 +3,7 @@
 PYTHON = python3
 
 # Default target
-all: test
+all: play
 
 # Run all tests
 test:
